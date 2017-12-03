@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>约瑟夫环问题</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./javascript/jquery.min.js"></script>
+    <script src="./javascript/index.js"></script>
+</head>
+
+<body>
+    <div class="box" hidden="hidden">
+        <h3 class="box-title">题干</h3>
+        <div class="box-content">
+            <pre>
+约瑟夫环（约瑟夫问题）是一个数学的应用问题：已知n个人（以编号1，2，3...n分别表示）围坐在一张
+圆桌周围。从编号为k的人开始报数，数到m的那个人出列；他的下一个人又从1开始报数，数到m的那个人
+又出列；依此规律重复下去，直到圆桌周围的人全部出列。
+要求：
+（1） 完整的图形用户界面，可以配置程序的运行参数，如：n的值，k的值、m的值、执行动画的速度等；
+（2） 算法支持多线程；
+（3） 执行过程可以暂停/继续；
+（4） 算法执行的结果（包括中间结果）可以持久化（以自定义数据格式保存到文件中；
+（5） 可从文件中读取数据，并在此基础上继续执行；
+（6） 实时图形化显示执行结果；
+（7） 可在执行完成后，或暂停时，打印执行的当前结果；
+    </pre>
+        </div>
+    </div>
+    <div class="box para">
+        <h3 class="box-title">参数</h3>
+        <div class="box-content">
+            <div>
+                <div class="para-input">
+                    <span>圆桌人数n</span>
+                    <input type="number" id="n" value="10">
+                </div>
+                <div class="para-input">
+                    <span>起始编号k：</span>
+                    <input type="number" id="k" value="1">
+                </div>
+            </div>
+            <div>
+                <div class="para-input">
+                    <span>出列数字m：</span>
+                    <input type="number" id="m" value="3">
+                </div>
+                <div class="para-input">
+                    <span>速度(ms)：</span>
+                    <input type="number" id="speed" value="300">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box option">
+        <h3 class="box-title">操作</h3>
+        <div class="box-content">
+            <div>
+                <button type="button" id="once-run">一次运行，运行中不可暂停</button>
+            </div>
+            <div style="margin-top:12px;">
+                <button type="button" id="start-run">开始运行</button>
+                <button type="button" id="pause">暂停</button>
+                <button type="button" id="save">保存当前进度</button>
+                <button type="button" id="load-state">从文件导入进度</button>
+            </div>
+        </div>
+    </div>
+    <div class="box result">
+        <h3 class="box-title">结果</h3>
+        <div class="box-content">
+            <span class="txt">自杀次序:</span>
+            <div id="result" class="order"></div>
+        </div>
+    </div>
+    <div class="box animate">
+        <h3 class="box-title">动画</h3>
+        <div class="box-content" id="nodes"></div>
+    </div>
+    <script>
+    $(document).ready(function() {
+
+        function initItems(nodes) {
+            $('#nodes').html('')
+            for (var i = 0; i < nodes.length; i++) {
+                $('#nodes').append('<span class="item" id="' + nodes[i] + '">' + nodes[i] + '</span>')
+            }
+        }
+        /***************可暂停运行********************************/
+
+
+        // console.log(josephus);
+
+        $('#start-run').click(function() {
+
+            var n = parseInt($('#n').val()); //n 总人数
+            var k = parseInt($('#k').val()); //从编号为k的开始报数
+            var m = parseInt($('#m').val()); //数到3的出列
+            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
+            var nodes = initElements(n);
+            initItems(nodes);
+            var cirLinkList = circleList(nodes, k);
+
+            var josephus = new Josephus(cirLinkList, m, n, k, speed);
+
+            showRunProcess(josephus);
+
+
+        })
+
+        function showRunProcess(josephus) {
+            $('#result').html('');
+
+            if (josephus.head != null) {
+                function myLoop() {
+                    josephus = getOneKilled(josephus);
+                    $('#' + josephus.kill_ele).css('background-color', '#999');
+                    $('#result').append('<span class="number">' + josephus.kill_ele + '</span>')
+                    setTimeout(function() {
+                        if (josephus.head != null) {
+                            myLoop()
+                        }
+                    }, josephus.speed)
+                }
+                myLoop();
+            }
+
+        }
+
+        /***************可暂停运行********************************/
+
+
+        /***************一次运行，运行期间不能暂停****************/
+        function showOnceRun(kill_arr, speed) {
+            $('#result').html('');
+            var counter = 0;
+
+            function myLoop() {
+                setTimeout(function() {
+                    id = kill_arr[counter];
+                    $('#' + id).css('background-color', '#999');
+                    $('#result').append('<span class="number">' + id + '</span>')
+                    counter++;
+                    if (counter < kill_arr.length) {
+                        myLoop();
+                    }
+                }, speed)
+            }
+            myLoop();
+        }
+
+        $('#once-run').click(function() {
+            var n = parseInt($('#n').val()); //n 总人数
+            var k = parseInt($('#k').val()); //从编号为k的开始报数
+            var m = parseInt($('#m').val()); //数到3的出列
+            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
+            var nodes = initElements(n);
+            initItems(nodes)
+            var cirLinkList = circleList(nodes, k);
+            var kill_arr = getAllKilled(cirLinkList, m);
+            showOnceRun(kill_arr, speed)
+        })
+
+        /***************一次运行，运行期间不能暂停****************/
+
+    })
+    </script>
+</body>
+
+</html>
