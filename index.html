@@ -48,7 +48,7 @@
                 </div>
                 <div class="para-input">
                     <span>速度(ms)：</span>
-                    <input type="number" id="speed" value="300">
+                    <input type="number" id="speed" value="1000">
                 </div>
             </div>
         </div>
@@ -56,15 +56,11 @@
     <div class="box option">
         <h3 class="box-title">操作</h3>
         <div class="box-content">
-            <div>
-                <button type="button" id="once-run">一次运行，运行中不可暂停</button>
-            </div>
-            <div style="margin-top:12px;">
-                <button type="button" id="start-run">开始运行</button>
-                <button type="button" id="pause">暂停</button>
-                <button type="button" id="save">保存当前进度</button>
-                <button type="button" id="load-state">从文件导入进度</button>
-            </div>
+            <button type="button" id="start-run">运行</button>
+            <button type="button" id="pause">暂停</button>
+            <button type="button" id="reset">重置</button>
+            <button type="button" id="save">保存当前进度</button>
+            <button type="button" id="load-state">从文件导入进度</button>
         </div>
     </div>
     <div class="box result">
@@ -87,82 +83,84 @@
                 $('#nodes').append('<span class="item" id="' + nodes[i] + '">' + nodes[i] + '</span>')
             }
         }
-        /***************可暂停运行********************************/
 
+        is_initJosephus = false;
 
-        // console.log(josephus);
+        function initJosephus() {
+            var n = parseInt($('#n').val()); //n 总人数
+            var k = parseInt($('#k').val()); //从编号为k的开始报数
+            var m = parseInt($('#m').val()); //数到3的出列
+            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
+            var nodes = initElements(n);
+            var cirLinkList = circleList(nodes, k);
+
+            //josephus定义为全局变量便于存储
+            josephus = new Josephus(cirLinkList, m, n, k, speed);
+            is_initJosephus = true;
+        }
+
+        $('#reset').click(function() {
+            initJosephus();
+            showRunProcess(josephus);
+        })
 
         $('#start-run').click(function() {
-
-            var n = parseInt($('#n').val()); //n 总人数
-            var k = parseInt($('#k').val()); //从编号为k的开始报数
-            var m = parseInt($('#m').val()); //数到3的出列
-            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
-            var nodes = initElements(n);
-            initItems(nodes);
-            var cirLinkList = circleList(nodes, k);
-
-            var josephus = new Josephus(cirLinkList, m, n, k, speed);
-
-            showRunProcess(josephus);
-
+            if (!is_initJosephus) {
+                initJosephus()
+            }
+            showRunProcess(josephus)
 
         })
 
-        function showRunProcess(josephus) {
-            $('#result').html('');
+        $('#pause').click(function() {
+            clearInterval(timer);
+            console.log(josephus);
+        })
 
+        $('#save').click(function(){
+            var temp = josephus;
+            delete temp.head;
+            var content = JSON.stringify(temp);
+
+            downloadFile('josephus.txt',content);
+        })
+        function showRunProcess(josephus) {
+            initResult(josephus);
             if (josephus.head != null) {
-                function myLoop() {
+                //timer定义为全局变量，使得可以stop
+                timer = setInterval(function() {
                     josephus = getOneKilled(josephus);
                     $('#' + josephus.kill_ele).css('background-color', '#999');
-                    $('#result').append('<span class="number">' + josephus.kill_ele + '</span>')
-                    setTimeout(function() {
-                        if (josephus.head != null) {
-                            myLoop()
-                        }
-                    }, josephus.speed)
-                }
-                myLoop();
-            }
-
-        }
-
-        /***************可暂停运行********************************/
-
-
-        /***************一次运行，运行期间不能暂停****************/
-        function showOnceRun(kill_arr, speed) {
-            $('#result').html('');
-            var counter = 0;
-
-            function myLoop() {
-                setTimeout(function() {
-                    id = kill_arr[counter];
-                    $('#' + id).css('background-color', '#999');
-                    $('#result').append('<span class="number">' + id + '</span>')
-                    counter++;
-                    if (counter < kill_arr.length) {
-                        myLoop();
+                    $('#result').append('<span class="number">' + josephus.kill_ele + '</span>');
+                    if (josephus.head == null) {
+                        clearInterval(timer);
                     }
-                }, speed)
+                }, josephus.speed)
+            } else {
+                clearInterval(timer);
             }
-            myLoop();
         }
 
-        $('#once-run').click(function() {
-            var n = parseInt($('#n').val()); //n 总人数
-            var k = parseInt($('#k').val()); //从编号为k的开始报数
-            var m = parseInt($('#m').val()); //数到3的出列
-            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
-            var nodes = initElements(n);
-            initItems(nodes)
-            var cirLinkList = circleList(nodes, k);
-            var kill_arr = getAllKilled(cirLinkList, m);
-            showOnceRun(kill_arr, speed)
-        })
+        function initResult(josephus) {
+            var kill_arr = josephus.kill_arr;
+            var all_arr = initElements(josephus.n);
+            initItems(all_arr);
+            $('#result').html('');
+            for (var i = 0; i < kill_arr.length; i++) {
+                $('#' + kill_arr[i]).css('background-color', '#999');
+                $('#result').append('<span class="number">' + kill_arr[i] + '</span>')
+            }
+        }
 
-        /***************一次运行，运行期间不能暂停****************/
+
+        function downloadFile(fileName,content) {
+            var aLink = document.createElement('a');
+            $(aLink).attr({
+                'href':'data:'+content,
+                'download':fileName
+            });
+            $(aLink).click();
+        }
 
     })
     </script>
