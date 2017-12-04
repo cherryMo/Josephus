@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <title>约瑟夫环问题</title>
     <link rel="stylesheet" href="./css/index.css">
-    <script src="./javascript/jquery.min.js"></script>
+    <script src="./javascript/jquery.min.js"></script>、
+    <script src="./javascript/FileSaver.min.js"></script>
+    <script src="./javascript/josephus.js"></script>
     <script src="./javascript/index.js"></script>
 </head>
 
@@ -48,7 +50,7 @@
                 </div>
                 <div class="para-input">
                     <span>速度(ms)：</span>
-                    <input type="number" id="speed" value="1000">
+                    <input type="number" id="speed" value="800">
                 </div>
             </div>
         </div>
@@ -61,6 +63,12 @@
             <button type="button" id="reset">重置</button>
             <button type="button" id="save">保存当前进度</button>
             <button type="button" id="load-state">从文件导入进度</button>
+            <input type="file" id="files" style="display:none" />
+        </div>
+        <div class="tips">
+            操作说明：
+            <p>1. 重新设置参数后需要点击“重置”按钮重新开始</p>
+            <p>2. 导入进度后可以点击“运行”“暂停”按钮操作</p>
         </div>
     </div>
     <div class="box result">
@@ -74,96 +82,6 @@
         <h3 class="box-title">动画</h3>
         <div class="box-content" id="nodes"></div>
     </div>
-    <script>
-    $(document).ready(function() {
-
-        function initItems(nodes) {
-            $('#nodes').html('')
-            for (var i = 0; i < nodes.length; i++) {
-                $('#nodes').append('<span class="item" id="' + nodes[i] + '">' + nodes[i] + '</span>')
-            }
-        }
-
-        is_initJosephus = false;
-
-        function initJosephus() {
-            var n = parseInt($('#n').val()); //n 总人数
-            var k = parseInt($('#k').val()); //从编号为k的开始报数
-            var m = parseInt($('#m').val()); //数到3的出列
-            var speed = parseInt($('#speed').val()); //动画速度，单位是ms
-            var nodes = initElements(n);
-            var cirLinkList = circleList(nodes, k);
-
-            //josephus定义为全局变量便于存储
-            josephus = new Josephus(cirLinkList, m, n, k, speed);
-            is_initJosephus = true;
-        }
-
-        $('#reset').click(function() {
-            initJosephus();
-            showRunProcess(josephus);
-        })
-
-        $('#start-run').click(function() {
-            if (!is_initJosephus) {
-                initJosephus()
-            }
-            showRunProcess(josephus)
-
-        })
-
-        $('#pause').click(function() {
-            clearInterval(timer);
-            console.log(josephus);
-        })
-
-        $('#save').click(function(){
-            var temp = josephus;
-            delete temp.head;
-            var content = JSON.stringify(temp);
-
-            downloadFile('josephus.txt',content);
-        })
-        function showRunProcess(josephus) {
-            initResult(josephus);
-            if (josephus.head != null) {
-                //timer定义为全局变量，使得可以stop
-                timer = setInterval(function() {
-                    josephus = getOneKilled(josephus);
-                    $('#' + josephus.kill_ele).css('background-color', '#999');
-                    $('#result').append('<span class="number">' + josephus.kill_ele + '</span>');
-                    if (josephus.head == null) {
-                        clearInterval(timer);
-                    }
-                }, josephus.speed)
-            } else {
-                clearInterval(timer);
-            }
-        }
-
-        function initResult(josephus) {
-            var kill_arr = josephus.kill_arr;
-            var all_arr = initElements(josephus.n);
-            initItems(all_arr);
-            $('#result').html('');
-            for (var i = 0; i < kill_arr.length; i++) {
-                $('#' + kill_arr[i]).css('background-color', '#999');
-                $('#result').append('<span class="number">' + kill_arr[i] + '</span>')
-            }
-        }
-
-
-        function downloadFile(fileName,content) {
-            var aLink = document.createElement('a');
-            $(aLink).attr({
-                'href':'data:'+content,
-                'download':fileName
-            });
-            $(aLink).click();
-        }
-
-    })
-    </script>
 </body>
 
 </html>

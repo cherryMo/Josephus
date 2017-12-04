@@ -1,102 +1,123 @@
-    * {
-        margin: 0;
-        padding: 0;
-    }
+* {
+    margin: 0;
+    padding: 0;
+}
 
-    body {
-        background-color: #e1e1e1;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 16px;
-        min-width: 842px;
-    }
+body {
+    background-color: #e1e1e1;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    min-width: 842px;
+}
 
-    .para,
-    .option,
-    .result,
-    .animate {}
+.para,
+.option,
+.result,
+.animate {}
 
-    .item {
-        font-size: 18px;
-        display: inline-block;
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
-        border-radius: 50%;
-        background-color: orange;
-        color: #fff;
-        text-align: center;
-        margin: 3px;
-    }
+.item {
+    font-size: 18px;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 50%;
+    background-color: orange;
+    color: #fff;
+    text-align: center;
+    margin: 3px;
+}
 
-    .box {
-        padding: 18px 24px;
-        margin: 16px 20px;
-        background-color: #fff;
-        border-radius: 8px;
-    }
+.box {
+    padding: 18px 24px;
+    margin: 16px 20px;
+    background-color: #fff;
+    border-radius: 8px;
+}
 
-    .box-title {
-        border-bottom: 1px #e1e1e1 solid;
-        padding-bottom: 12px;
-    }
+.box-title {
+    border-bottom: 1px #e1e1e1 solid;
+    padding-bottom: 12px;
+}
 
-    .box-content {
-        margin-top: 12px; 
-    }
-    .result .txt {
-        display: inline-block;
-        height: 28px;
-        line-height: 28px;
-        margin-right: 5px;
-    }
-    .result .order {
-        display: inline-block;
-        height: 28px;
-        line-height: 28px;
-    }
-    .number {
-        display: inline-block;
-        margin-right: 6px;
-        height: 24px;
-        width: 24px;
-        background: rgba(245,0,0,0.71);
-        text-align: center;
-        line-height: 24px;
-        color: #fff;
-    }
-    .para-input {
-    	display: inline-block;
-    	height: 24px;
-    	margin:8px 12px; 
-    }
-    .para-input span {
-		display: inline-block;
-		width: 95px;
-    }
-    .para-input input {
-    	height: 24px;
-		width: 120px;
-		padding:0 5px;
-		font-size: 14px;
-    }
+.box-content {
+    margin-top: 12px;
+}
 
-    button {
-    	display: inline-block;
-    	padding: 6px 12px;
-    	font-size: 14px;
-    	font-weight: 400;
-    	line-height: 1.42;
-    	white-space: nowrap;
-    	vertical-align: middle;
-    	cursor: pointer;
-    	border: 1px solid transparent;
-    	border-radius:4px;
-    	color: #333;
-    	background-color: #e6e6e6;
-    	border-color: #ccc;
-    	margin-right:5px;
-    }
-    button:hover{
-    	background-color: #5bc0de;
-    	color: #fff;
-    }
+.result .txt {
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    margin-right: 5px;
+}
+
+.result .order {
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+}
+
+.number {
+    display: inline-block;
+    margin-right: 6px;
+    height: 24px;
+    width: 24px;
+    background: rgba(245, 0, 0, 0.71);
+    text-align: center;
+    line-height: 24px;
+    color: #fff;
+}
+
+.para-input {
+    display: inline-block;
+    height: 24px;
+    margin: 8px 12px;
+}
+
+.para-input span {
+    display: inline-block;
+    width: 95px;
+}
+
+.para-input input {
+    height: 24px;
+    width: 120px;
+    padding: 0 5px;
+    font-size: 14px;
+}
+
+button {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #ccc;
+    margin-right: 5px;
+}
+
+button:hover {
+    background-color: #5bc0de;
+    color: #fff;
+}
+
+.option .tips {
+    font-size: 13px;
+    font-weight: bold;
+    color: #f0ad4e;
+    margin-top: 16px;
+}
+
+.tips p {
+    font-weight: normal;
+    text-indent: 12px;
+    color: #666;
+    margin: 5px;
+}

@@ -1,127 +1,120 @@
-/**
- * 使用循环链表实现解决约瑟夫环问题
- * */
+$(document).ready(function() {
+    //全局变量，判断josephus是否初始化
+    is_initJosephus = false;
 
-//根据参数初始化链表
-//n,总人数，初始化为[1,2,3,...,n]
-//k,开始报数位置，链表的head
-//m,数到m的出列
-// function init(m,n,k){
-//     ele_array = initElements(n);
-//     head = circleList(ele_array,k);
-//     return {
-//         eles:ele_array,
-//         circleList:head
-//     } 
-// }
+    $('#reset').click(function() {
+        initJosephus();
+        showRunProcess(josephus);
+    })
 
-
-function initElements(n) {
-    var ele_array = [];
-    for (var i = 0; i < n; i++) {
-        ele_array.push(i + 1)
-    }
-    return ele_array;
-}
-
-// 链表节点
-function Node(element) {
-    this.element = element;
-    this.next = null;
-}
-
-//初始化链表，参数ele_array,k
-//返回head位置
-function circleList(ele_array, k) {
-    index = ele_array.indexOf(k);
-    if (index == -1) {
-        return false;
-    }
-    var head = new Node(ele_array[index]);
-    var p = head;
-    for (var i = index + 1; i < ele_array.length; i++) {
-        var temp = new Node(ele_array[i]);
-        p.next = temp;
-        p = temp;
-    }
-    for (var i = 0; i < index; i++) {
-        var temp = new Node(ele_array[i]);
-        p.next = temp;
-        p = temp;
-    }
-    p.next = head;
-    return head;
-}
-
-function Josephus(circleList, m, n, k, speed) {
-    this.head = circleList;
-    this.m = m;
-    this.n = n;
-    this.k = k;
-    this.speed = speed;
-    this.kill_arr = [];
-    this.kill_ele = '';
-    // this.getOneKilled = function() {
-    //     var current = this.head;
-    //     if (current.next.element != current.element) {
-    //         for (var i = 1; i < m; i++) {
-    //             var temp = current;
-    //             current = current.next;
-    //         }
-    //         this.kill_ele = current.element;
-    //         this.kill_arr.push(this.kill_ele);
-    //         temp.next = current.next;
-    //         current = temp.next;
-    //         this.head = current;
-    //     } else {
-    //         kill_ele = current.element;
-    //         current = null;
-    //         this.head = current;
-    //         this.kill_ele = current.element;
-    //         this.kill_arr.push(this.kill_ele);
-    //     }  
-};
-
-// 一次出列
-// 参数head(循环链表的返回值),m(数到m的出列)
-// 返回值，curr_ele，head,m
-function getOneKilled(josephus) {
-    var current = josephus.head;
-    if (current.next.element != current.element) {
-        for (var i = 1; i < josephus.m; i++) {
-            var temp = current;
-            current = current.next;
+    $('#start-run').click(function() {
+        if (!is_initJosephus) {
+            initJosephus()
         }
-        josephus.kill_ele = current.element;
-        josephus.kill_arr.push(current.element);
-        temp.next = current.next;
-        current = temp.next;
-        josephus.head = current;
-    } else {
-        josephus.kill_ele = current.element;
-        josephus.kill_arr.push(current.element);
-        current = null;
-        josephus.head = current;
-    }
-    return josephus;
-}
+        showRunProcess(josephus)
+
+    })
+
+    $('#pause').click(function() {
+        clearInterval(timer);
+        console.log(josephus);
+    })
+
+    $('#save').click(function() {
+        $('#pause').trigger('click');
+        var temp = josephus;
+        temp.head = josephus.head.element;
+        var content = JSON.stringify(temp);
+        var blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        saveAs(blob, "josephus.json");
+    })
+
+    $('#load-state').click(function() {
+        $('#files').trigger('click');
+    })
+
+    $('#files').change(function() {
+        importFile();
+    })
 
 
-function getAllKilled(circleList, m) {
-    var current = circleList;
-    var kill_arr = [];
-    while (current.next.element != current.element) {
-        for (var i = 1; i < m; i++) {
-            var temp = current;
-            current = current.next;
+    function initItems(nodes) {
+        $('#nodes').html('')
+        for (var i = 0; i < nodes.length; i++) {
+            $('#nodes').append('<span class="item" id="' + nodes[i] + '">' + nodes[i] + '</span>')
         }
-        //删除节点的本质即改变其前一个元素的后继
-        kill_arr.push(current.element)
-        temp.next = current.next;
-        current = temp.next;
     }
-    kill_arr.push(current.element)
 
-    //返回自杀次序
-    return kill_arr;
-}
+    function initJosephus() {
+        var n = parseInt($('#n').val()); //n 总人数
+        var k = parseInt($('#k').val()); //从编号为k的开始报数
+        var m = parseInt($('#m').val()); //数到3的出列
+        var speed = parseInt($('#speed').val()); //动画速度，单位是ms
+        var nodes = initElements(n);
+        var cirLinkList = circleList(nodes, k);
+
+        //josephus定义为全局变量便于存储
+        josephus = new Josephus(cirLinkList, m, n, k, speed);
+        is_initJosephus = true;
+    }
+
+    function initResult(josephus) {
+        var kill_arr = josephus.kill_arr;
+        var all_arr = initElements(josephus.n);
+        initItems(all_arr);
+        $('#result').html('');
+        for (var i = 0; i < kill_arr.length; i++) {
+            $('#' + kill_arr[i]).css('background-color', '#999');
+            $('#result').append('<span class="number">' + kill_arr[i] + '</span>')
+        }
+    }
+
+    function initCircleList(ele_arr, k) {
+        return circleList(ele_arr, k);
+    }
+
+    function showRunProcess(josephus) {
+        initResult(josephus);
+        if (josephus.head != null) {
+            //timer定义为全局变量，使得可以stop
+            timer = setInterval(function() {
+                josephus = getOneKilled(josephus);
+                $('#' + josephus.kill_ele).css('background-color', '#999');
+                $('#result').append('<span class="number">' + josephus.kill_ele + '</span>');
+                if (josephus.head == null) {
+                    clearInterval(timer);
+                }
+            }, josephus.speed)
+        } else {
+            clearInterval(timer);
+        }
+    }
+
+    function importFile() {
+        var selectedFile = document.getElementById("files").files[0];
+        var name = selectedFile.name;
+        var size = selectedFile.size;
+        console.log("文件名:" + name + "大小：" + size);
+
+        var reader = new FileReader();
+        reader.readAsText(selectedFile);
+
+        reader.onload = function() {
+            var temp = JSON.parse(this.result);
+            var nodes = initElements(temp.n);
+            var kill_arr = temp.kill_arr;
+
+            var leftNode = nodes.filter(function(ele) {
+                return kill_arr.indexOf(ele) == -1 ? ele : null
+            })
+            var circleList = initCircleList(leftNode, temp.head)
+            josephus = new Josephus(circleList, temp.m, temp.n, temp.k, temp.speed, kill_arr)
+            is_initJosephus = true;
+            initResult(josephus);
+            alert('导入成功,点击运行按钮开始运行')
+
+        };
+    };
+
+
+})
