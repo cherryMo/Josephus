@@ -43,6 +43,11 @@ $(document).ready(function() {
         for (var i = 0; i < nodes.length; i++) {
             $('#nodes').append('<span class="item" id="' + nodes[i] + '">' + nodes[i] + '</span>')
         }
+
+        var width = 32*(nodes.length)/3
+        $('#nodes').css({'width': width,'height':width})
+        var radius = $('#nodes').width()/2
+        formatCircle($('#nodes'),$('.item'),radius)
     }
 
     function initJosephus() {
@@ -116,5 +121,26 @@ $(document).ready(function() {
         };
     };
 
+
+    function formatCircle(container,item,radius) {
+        //中心点横坐标
+        var dotLeft = (container.width()) / 2;
+        //中心点纵坐标
+        var dotTop = (container.height()) / 2;
+        console.log(dotLeft, dotTop, item.length)
+        //起始角度
+        var stard = 0;
+        //半径
+        var radius = radius;
+        //每一个BOX对应的角度;
+        var avd = 360 / item.length;
+        //每一个BOX对应的弧度;
+        var ahd = avd * Math.PI / 180;
+        //设置圆的中心点的位置
+        // $(".dot").css({ "left": dotLeft, "top": dotTop });
+        item.each(function(index, element) {
+            $(this).css({ "left": Math.sin((ahd * index)) * radius + dotLeft, "top": Math.cos((ahd * index)) * radius + dotTop });
+        });
+    }
 
 })
