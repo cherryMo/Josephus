@@ -2,20 +2,8 @@
  * 使用循环链表实现解决约瑟夫环问题
  * */
 
-//根据参数初始化链表
-//n,总人数，初始化为[1,2,3,...,n]
-//k,开始报数位置，链表的head
-//m,数到m的出列
-// function init(m,n,k){
-//     ele_array = initElements(n);
-//     head = circleList(ele_array,k);
-//     return {
-//         eles:ele_array,
-//         circleList:head
-//     } 
-// }
 
-
+//根据参数n初始化节点数组
 function initElements(n) {
     var ele_array = [];
     for (var i = 0; i < n; i++) {
@@ -53,6 +41,7 @@ function circleList(ele_array, k) {
     return head;
 }
 
+//Josephus类，用于保存程序的执行状态参数
 function Josephus(circleList, m, n, k, speed,kill_arr) {
     this.head = circleList;
     this.m = m;
@@ -61,25 +50,6 @@ function Josephus(circleList, m, n, k, speed,kill_arr) {
     this.speed = speed;
     this.kill_arr = kill_arr?kill_arr:[];
     this.kill_ele = '';
-    // this.getOneKilled = function() {
-    //     var current = this.head;
-    //     if (current.next.element != current.element) {
-    //         for (var i = 1; i < m; i++) {
-    //             var temp = current;
-    //             current = current.next;
-    //         }
-    //         this.kill_ele = current.element;
-    //         this.kill_arr.push(this.kill_ele);
-    //         temp.next = current.next;
-    //         current = temp.next;
-    //         this.head = current;
-    //     } else {
-    //         kill_ele = current.element;
-    //         current = null;
-    //         this.head = current;
-    //         this.kill_ele = current.element;
-    //         this.kill_arr.push(this.kill_ele);
-    //     }  
 };
 
 // 一次出列
@@ -122,6 +92,6 @@ function getAllKilled(circleList, m) {
     }
     kill_arr.push(current.element)
 
-    //返回自杀次序
+    //返回出列次序
     return kill_arr;
 }
